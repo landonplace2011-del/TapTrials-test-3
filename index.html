@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clicker Test</title>
+<style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    #tapButton { padding: 30px 50px; font-size: 24px; margin: 20px; }
+    #energyContainer { width: 300px; height: 30px; background: #ccc; margin: 20px auto; border-radius: 5px; overflow: hidden; }
+    #energy-bar { height: 100%; width: 100%; background: #4caf50; transition: width 0.1s linear; }
+    #score { font-size: 24px; }
+</style>
+</head>
+<body>
+
+<h1>Clicker Test</h1>
+<div id="score">Score: 0</div>
+<button id="tapButton">Tap!</button>
+
+<div id="energyContainer">
+    <div id="energy-bar"></div>
+</div>
+
+<script>
+let score = 0;
+let clickPower = 1;
+
+let energy = 100;
+const maxEnergy = 100;
+const energyDrainPerTap = 10;
+const drainSpeed = 1;
+
+// Smooth energy drain
+function drainEnergy(amount) {
+    const targetEnergy = Math.max(energy - amount, 0);
+    function step() {
+        if (energy > targetEnergy) {
+            energy -= drainSpeed;
+            if (energy < targetEnergy) energy = targetEnergy;
+            updateEnergyUI();
+            requestAnimationFrame(step);
+        }
+    }
+    step();
+}
+
+// Smooth energy regeneration
+function regenEnergy() {
+    if (energy < maxEnergy) {
+        energy += 0.2;
+        if (energy > maxEnergy) energy = maxEnergy;
+        updateEnergyUI();
+    }
+    requestAnimationFrame(regenEnergy);
+}
+regenEnergy();
+
+// Update energy bar UI
+function updateEnergyUI() {
+    const energyBar = document.getElementById('energy-bar');
+    energyBar.style.width = `${(energy / maxEnergy) * 100}%`;
+}
+
+// Handle taps
+document.getElementById('tapButton').addEventListener('click', () => {
+    if (energy > 0) {
+        score += clickPower;
+        document.getElementById('score').textContent = `Score: ${score}`;
+        drainEnergy(energyDrainPerTap);
+    }
+});
+
+// Placeholder for upgrades
+function buyUpgrade(type) {
+    if(type === 'clickPower') clickPower += 1;
+}
+
+</script>
+</body>
+</html>
